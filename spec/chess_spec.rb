@@ -69,6 +69,15 @@ describe Player do
 end
 
 describe Piece do
+	let(:piece) { Piece.new("Black", "265C") }
+	describe "#new" do
+		context "when new piece is created" do
+			it "has a color and a converted unicode symbol" do
+				expect(piece.instance_variable_get(:@color)).to eq("Black")
+				expect(piece.instance_variable_get(:@unicode)).to eq(["265C".hex].pack("U"))
+			end
+		end
+	end
 end
 
 describe Pawn do
