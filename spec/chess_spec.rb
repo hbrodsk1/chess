@@ -94,14 +94,36 @@ describe Piece do
 end
 
 describe Pawn do
-	let(:pawn) { Pawn.new }
+	let(:pawn) { Pawn.new("Black", "265F") }
 	context "Check that it inherits from Piece class" do
 		it { expect(Pawn.superclass).to be Piece }
 	end
 
-	describe "#move" do
+	describe "#move?" do
 		context "regular move" do
 			it "allows pawn to move one space forward if space is unoccupied" do
+				expect(pawn.move?([1, 1], [2, 1], "Black")).to eq(true)
+			end
+		end
+
+		context "improper move" do
+			it "does not allow pawn to move more than one space forward at a time" do
+				expect(pawn.move?([6, 2], [4, 2], "White")).to eq(false)
+			end
+		end
+	end
+
+	describe "#attackable_piece?" do
+		subject { Board.new }
+		context "pawn can capture opponent's piece" do
+			it "returns true" do
+				expect(pawn.attackable_piece?([5, 2], [6, 1], "Black", subject)).to eq(true)
+			end
+		end
+
+		context "pawn can not capture opponent's piece" do
+			it "returns false" do
+				expect(pawn.attackable_piece?([5, 2], [3, 6], "White", subject)).to eq(false)
 			end
 		end
 	end

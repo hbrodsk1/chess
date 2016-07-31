@@ -96,14 +96,18 @@ class Piece
 end
 
 class Pawn < Piece
-  def move?(current_space, end_space, color)
+
+  def initialize(color, unicode)
+    super
+  end
+  def move?(current_space, end_space, color, board)
     case color
     when "Black"
-      if end_space[0] == current_space[0] + 1 && end_space[1] == current_space [1]
+      if end_space[0] == current_space[0] + 1 && end_space[1] == current_space[1] && board.board[current_space[0]][current_space[1]].color == "Black"
         return true
       end
     when "White"
-      if end_space[0] == current_space[0] - 1 && end_space[1] == current_space [1]
+      if end_space[0] == current_space[0] - 1 && end_space[1] == current_space[1] && board.board[current_space[0]][current_space[1]].color == "White"
         return true
       end
     end  
@@ -111,21 +115,22 @@ class Pawn < Piece
   end
 
   def attackable_piece?(current_space, end_space, color, board)
+    piece = board.board[end_space[0]][end_space[1]]
     case color
     when "Black"
-      if end_space[0] == current_space[0] + 1 && end_space[1] == current_space [1] + 1 && board.board[end_space[0]][end_space[1]].color != "Black"
+      if end_space[0] == current_space[0] + 1 && end_space[1] == current_space[1] + 1 && piece.color != "Black"
         return true
-      elsif end_space[0] == current_space[0] + 1 && end_space[1] == current_space [1] - 1 && board.board[end_space[0]][end_space[1]].color != "Black"
+      elsif end_space[0] == current_space[0] + 1 && end_space[1] == current_space[1] - 1 && piece.color != "Black"
         return true
       end
     when "White"
-      if end_space[0] == current_space[0] - 1 && end_space[1] == current_space [1] + 1 && board.board[end_space[0]][end_space[1]].color != "White"
+      if end_space[0] == current_space[0] - 1 && end_space[1] == current_space[1] + 1 && piece.color != "White"
         return true
-      elsif end_space[0] == current_space[0] - 1 && end_space[1] == current_space [1] - 1 && board.board[end_space[0]][end_space[1]].color != "White"
+      elsif end_space[0] == current_space[0] - 1 && end_space[1] == current_space[1] - 1 && piece.color != "White"
         return true  
       end
     end
-    false
+  false
   end
 end
 
@@ -134,7 +139,72 @@ class Rooke < Piece
 end
 
 class Knight < Piece
+  def initialize(color, unicode)
+    super
+  end
+  def move?(current_space, end_space, color, board)
+    if end_space[0] == current_space[0] + 2 && end_space[1] == current_space[1] - 1 
+      return true
+    elsif end_space[0] == current_space[0] + 2 && end_space[1] == current_space[1] + 1
+      return true
+    elsif end_space[0] == current_space[0] - 2 && end_space[1] == current_space[1] - 1
+      return true
+    elsif end_space[0] == current_space[0] - 2 && end_space[1] == current_space[1] + 1
+      return true
+    elsif end_space[0] == current_space[0] + 1 && end_space[1] == current_space[1] + 2
+      return true
+    elsif end_space[0] == current_space[0] + 1 && end_space[1] == current_space[1] - 2
+      return true
+    elsif end_space[0] == current_space[0] - 1 && end_space[1] == current_space[1] + 2
+      return true
+    elsif end_space[0] == current_space[0] - 1 && end_space[1] == current_space[1] - 2
+      return true  
+    end
+  false 
+  end
 
+  def attackable_piece?(current_space, end_space, color, board)
+    piece = board.board[end_space[0]][end_space[1]]
+    case color
+    when "Black"
+      if end_space[0] == current_space[0] + 2 && end_space[1] == current_space[1] - 1 && piece.color != "Black"
+        return true
+      elsif end_space[0] == current_space[0] + 2 && end_space[1] == current_space[1] + 1 && piece.color != "Black"
+        return true
+      elsif end_space[0] == current_space[0] - 2 && end_space[1] == current_space[1] - 1 && piece.color != "Black"
+        return true
+      elsif end_space[0] == current_space[0] - 2 && end_space[1] == current_space[1] + 1 && piece.color != "Black"
+        return true
+      elsif end_space[0] == current_space[0] + 1 && end_space[1] == current_space[1] + 2 && piece.color != "Black"
+        return true
+      elsif end_space[0] == current_space[0] + 1 && end_space[1] == current_space[1] - 2 && piece.color != "Black"
+        return true
+      elsif end_space[0] == current_space[0] - 1 && end_space[1] == current_space[1] + 2 && piece.color != "Black"
+        return true
+      elsif end_space[0] == current_space[0] - 1 && end_space[1] == current_space[1] - 2 && piece.color != "Black"
+        return true  
+      end 
+    when "White"
+      if end_space[0] == current_space[0] + 2 && end_space[1] == current_space[1] - 1 && piece.color != "White"
+        return true
+      elsif end_space[0] == current_space[0] + 2 && end_space[1] == current_space[1] + 1 && piece.color != "White"
+        return true
+      elsif end_space[0] == current_space[0] - 2 && end_space[1] == current_space[1] - 1 && piece.color != "White"
+        return true
+      elsif end_space[0] == current_space[0] - 2 && end_space[1] == current_space[1] + 1 && piece.color != "White"
+        return true
+      elsif end_space[0] == current_space[0] + 1 && end_space[1] == current_space[1] + 2 && piece.color != "White"
+        return true
+      elsif end_space[0] == current_space[0] + 1 && end_space[1] == current_space[1] - 2 && piece.color != "White"
+        return true
+      elsif end_space[0] == current_space[0] - 1 && end_space[1] == current_space[1] + 2 && piece.color != "White"
+        return true
+      elsif end_space[0] == current_space[0] - 1 && end_space[1] == current_space[1] - 2 && piece.color != "White"
+        return true  
+      end 
+    end
+  false 
+  end
 end
 
 class Bishop < Piece
@@ -159,8 +229,16 @@ class Game
     @current_color = ""
     @piece_to_move = ""
     @space_to_move_to = ""
-    @game_piece = ""
+    
     @board = Board.new
+    @game_piece = @board.board[0][0]
+  end
+
+  def start_game
+    welcome_message
+    while !game_over
+      turn_message
+    end
   end
 
   #Gather's and sets players' names
@@ -177,23 +255,26 @@ class Game
 
     @player_2 = Player.new("White") ; @player_2.set_name
     puts "\nThank you #{@player_2.name}\n\n"
+
+    return true
   end
 
   #Message that appears before each turn or after an invalid user input
   def turn_message
-    @board.display
-    puts "Your turn, #{@current_player}. Please select the piece you would like to move\nby typing in its coordinates, separated by a comma and a space. ie. 6, 2\n\n"
-
-    find_piece_type
+    valid = false
+    while valid == false
+      @board.display
+      puts "Your turn, #{@current_player}. Please select the piece you would like to move\nby typing in its coordinates, separated by a comma and a space. ie. 6, 2\n\n"
+      valid = find_piece_type
+    end
   end
 
   def find_piece_type
     if format_origin_space_input && format_destination_space_input
-
       #sets @piece_to_move as actual instance of a class, rather than an array
       @game_piece = @board.board[@piece_to_move[0]][@piece_to_move[1]]
 
-      if @game_piece.move?(@piece_to_move, @space_to_move_to, @current_color) || @game_piece.attackable_piece?(@piece_to_move, @space_to_move_to, @current_color, @board)
+      if @game_piece.move?(@piece_to_move, @space_to_move_to, @current_color, @board) || @game_piece.attackable_piece?(@piece_to_move, @space_to_move_to, @current_color, @board)
         #sets game_piece in the desired space on the board
         @board.board[@space_to_move_to[0]][@space_to_move_to[1]] = @game_piece
 
@@ -201,13 +282,13 @@ class Game
         @board.board[@piece_to_move[0]][@piece_to_move[1]] = nil
         switch_players
         #display the board with updated piece positions
-        turn_message
+        return true
       else
         error_message("piece limitation")
-        turn_message
+        return false
       end
     else
-      turn_message 
+      return false 
     end
   end
 
@@ -259,7 +340,9 @@ class Game
   end
 
   def validate_space_to_move_to(input_1, input_2)
-    if @board.board[input_1][input_2].nil? || @game_piece.attackable_piece?(@piece_to_move, @space_to_move_to, @current_color, @board)
+    if @board.board[input_1][input_2].nil?
+      return true
+    elsif @board.board[@piece_to_move[0]][@piece_to_move[1]].attackable_piece?(@piece_to_move, @space_to_move_to, @current_color, @board)
       return true
     else
      error_message("occupied")
@@ -275,7 +358,6 @@ class Game
       puts "\n\nYou must enter a space that currently has one of your pieces"
     when "piece limitation"
       puts "\n\nA #{@game_piece.class} can not move to #{@space_to_move_to}"
-    
     when "occupied"
       puts "\n\nThere is aleady a piece at #{@space_to_move_to}, and you can not capture it"
     end
@@ -291,7 +373,10 @@ class Game
       @current_color = @player_1.color
     end
   end
+
+  def game_over
+  end
 end
 
 
-x = Game.new ; x.welcome_message ; x.turn_message
+x = Game.new ; x.start_game
