@@ -96,10 +96,10 @@ class Piece
 end
 
 class Pawn < Piece
-
   def initialize(color, unicode)
     super
   end
+
   def move?(current_space, end_space, color, board)
     case color
     when "Black"
@@ -135,7 +135,57 @@ class Pawn < Piece
 end
 
 class Rooke < Piece
+  def initialize(color, unicode)
+    super
+  end
 
+  def move?(current_space, end_space, color, board)
+    piece = board.board[current_space[0]][current_space[1]]
+    valid = true
+
+    if current_space[0] < end_space[0]
+      diff = end_space[0] - current_space[0] 
+      1.upto(diff) do |item|
+        next_space = board.board[current_space[0] + item][current_space[1]]
+        if !next_space.nil? && color == piece.color
+          valid = false
+          break
+        end
+      end
+    elsif current_space[0] > end_space[0]
+      diff = current_space[0] - end_space[0]
+      1.upto(diff) do |item|
+        back_space = board.board[current_space[0] - item][current_space[1]]
+        if !back_space.nil? && color == piece.color
+          valid = false
+          break
+        end
+      end
+    elsif current_space[1] < end_space[1]
+      diff = end_space[1] - current_space[1] 
+      1.upto(diff) do |item|
+        next_space = board.board[current_space[0]][current_space[1] + item]
+        if !next_space.nil? && color == piece.color
+          valid = false
+          break
+        end
+      end
+    elsif current_space[1] > end_space[1]
+      diff = current_space[1] - end_space[1] 
+      1.upto(diff) do |item|
+        back_space = board.board[current_space[0]][current_space[1] - item]
+        if !back_space.nil? && color == piece.color
+          valid = false
+          break
+        end
+      end
+    end
+  valid
+  end
+
+  def attackable_piece?(current_space, end_space, color, board)
+    puts "poop"
+  end
 end
 
 class Knight < Piece
@@ -270,9 +320,11 @@ class Game
   end
 
   def find_piece_type
+    p @game_piece
     if format_origin_space_input && format_destination_space_input
       #sets @piece_to_move as actual instance of a class, rather than an array
       @game_piece = @board.board[@piece_to_move[0]][@piece_to_move[1]]
+      p @game_piece
 
       if @game_piece.move?(@piece_to_move, @space_to_move_to, @current_color, @board) || @game_piece.attackable_piece?(@piece_to_move, @space_to_move_to, @current_color, @board)
         #sets game_piece in the desired space on the board
