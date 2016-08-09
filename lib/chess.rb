@@ -35,8 +35,8 @@ class Board
     @board[7][3] = Queen.new("White", "2655")
 
     #Populates board spaces [0][4], [7][4] with Kings
-    @board[0][4] = King.new("Black", "265A")
-    @board[7][4] = King.new("White", "2654")
+    @board[5][4] = King.new("Black", "265A")
+    @board[5][5] = King.new("White", "2654")
   end
 
   def display
@@ -141,42 +141,50 @@ class Rooke < Piece
 
   def move?(current_space, end_space, color, board)
     piece = board.board[current_space[0]][current_space[1]]
-    valid = true
+    valid = false
 
-    if current_space[0] < end_space[0]
+    if current_space[0] < end_space[0] && current_space[1] == end_space[1]
       diff = end_space[0] - current_space[0] 
       1.upto(diff) do |item|
         next_space = board.board[current_space[0] + item][current_space[1]]
         if !next_space.nil? && color == piece.color
           valid = false
           break
+        else
+          valid = true 
         end
       end
-    elsif current_space[0] > end_space[0]
+    elsif current_space[0] > end_space[0] && current_space[1] == end_space[1]
       diff = current_space[0] - end_space[0]
       1.upto(diff) do |item|
         back_space = board.board[current_space[0] - item][current_space[1]]
         if !back_space.nil? && color == piece.color
           valid = false
           break
+        else
+          valid = true
         end
       end
-    elsif current_space[1] < end_space[1]
+    elsif current_space[1] < end_space[1] && current_space[0] == end_space[0]
       diff = end_space[1] - current_space[1] 
       1.upto(diff) do |item|
         next_space = board.board[current_space[0]][current_space[1] + item]
         if !next_space.nil? && color == piece.color
           valid = false
           break
+        else
+          valid = true
         end
       end
-    elsif current_space[1] > end_space[1]
+    elsif current_space[1] > end_space[1] && current_space[0] == end_space[0]
       diff = current_space[1] - end_space[1] 
       1.upto(diff) do |item|
         back_space = board.board[current_space[0]][current_space[1] - item]
         if !back_space.nil? && color == piece.color
           valid = false
           break
+        else
+          valid = true
         end
       end
     end
@@ -184,7 +192,58 @@ class Rooke < Piece
   end
 
   def attackable_piece?(current_space, end_space, color, board)
-    puts "poop"
+    piece = board.board[current_space[0]][current_space[1]]
+    piece_to_capture = board.board[end_space[0]][end_space[1]]
+    valid = false
+
+    if current_space == end_space || piece_to_capture.nil?
+      return false
+    elsif current_space[0] < end_space[0] && current_space[1] == end_space[1]
+      diff = end_space[0] - current_space[0] 
+      1.upto(diff) do |item|
+        next_space = board.board[current_space[0] + item][current_space[1]]
+        if !next_space.nil? && next_space != piece_to_capture
+          valid = false
+          break
+        else
+          valid = true if color != piece_to_capture.color
+        end
+      end
+    elsif current_space[0] > end_space[0] && current_space[1] == end_space[1]
+      diff = current_space[0] - end_space[0] 
+      1.upto(diff) do |item|
+        back_space = board.board[current_space[0] - item][current_space[1]]
+        if !back_space.nil? && back_space != piece_to_capture
+          valid = false
+          break
+        else
+          valid = true if color != piece_to_capture.color
+        end
+      end
+    elsif current_space[1] < end_space[1] && current_space[0] == end_space[0]
+      diff = end_space[1] - current_space[1] 
+      1.upto(diff) do |item|
+        next_space = board.board[current_space[0]][current_space[1] + item]
+        if !next_space.nil? && next_space != piece_to_capture
+          valid = false
+          break
+        else
+          valid = true if color != piece_to_capture.color 
+        end
+      end
+    elsif current_space[1] > end_space[1] && current_space[0] == end_space[0]
+      diff = current_space[1] - end_space[1] 
+      1.upto(diff) do |item|
+        back_space = board.board[current_space[0]][current_space[1] - item]
+        if !back_space.nil? && back_space != piece_to_capture
+          valid = false
+          break
+        else
+          valid = true if color != piece_to_capture.color
+        end
+      end  
+    end
+    valid
   end
 end
 
@@ -258,7 +317,113 @@ class Knight < Piece
 end
 
 class Bishop < Piece
+  def move?(current_space, end_space, color, board)
+    piece = board.board[current_space[0]][current_space[1]]
+    valid = false
 
+    if end_space[0] - current_space[0] == end_space[1] - current_space[1]
+      diff = end_space[0] - current_space[0]
+      if diff > 0 
+        1.upto(diff) do |item|
+          next_space = board.board[current_space[0] + item][current_space[1] + item]
+          if next_space.nil?
+            valid = true
+          else
+            valid = false
+            break
+          end
+        end
+      else
+        1.upto(diff.abs) do |item|
+          next_space = board.board[current_space[0] - item][current_space[1] - item]
+          if next_space.nil?
+            valid = true
+          else
+            valid = false
+            break
+          end
+        end
+      end
+    elsif (end_space[0] - current_space[0]).abs == end_space[1] - current_space[1]
+      diff = (end_space[0] - current_space[0]).abs
+      1.upto(diff) do |item|
+          next_space = board.board[current_space[0] - item][current_space[1] + item]
+          if next_space.nil?
+            valid = true
+          else
+            valid = false
+            break
+          end
+        end
+    elsif end_space[0] - current_space[0] == (end_space[1] - current_space[1]).abs
+      diff = (end_space[1] - current_space[1]).abs
+      1.upto(diff) do |item|
+          next_space = board.board[current_space[0] + item][current_space[1] - item]
+          if next_space.nil?
+            valid = true
+          else
+            valid = false
+            break
+          end
+        end
+    end
+    valid
+  end
+
+  def attackable_piece?(current_space, end_space, color, board)
+    piece_to_capture = board.board[end_space[0]][end_space[1]]
+    valid = false
+
+    if current_space == end_space || piece_to_capture.nil?
+      return false
+    elsif current_space[0] - end_space[0] == current_space[1] - end_space[1]
+      diff = end_space[0] - current_space[0]
+      if diff > 0
+        1.upto(diff) do |item|
+          next_space = board.board[current_space[0] + item][current_space[1] + item]
+          if !next_space.nil? && next_space != piece_to_capture
+            valid = false
+            break
+          else
+            valid = true if color != piece_to_capture.color
+          end
+        end
+      else
+        1.upto(diff.abs) do |item|
+          next_space = board.board[current_space[0] - item][current_space[1] - item]
+          if !next_space.nil? && next_space != piece_to_capture
+            valid = false
+            break
+          else
+            valid = true if color != piece_to_capture.color
+          end
+        end
+      end
+    elsif (end_space[0] - current_space[0]).abs == end_space[1] - current_space[1]
+      diff = (end_space[0] - current_space[0]).abs
+      1.upto(diff) do |item|
+          next_space = board.board[current_space[0] - item][current_space[1] + item]
+          if !next_space.nil? && next_space != piece_to_capture
+            valid = false
+            break
+          else
+            valid = true if color != piece_to_capture.color
+          end
+        end
+    elsif end_space[0] - current_space[0] == (end_space[1] - current_space[1]).abs
+      diff = (end_space[1] - current_space[1]).abs
+      1.upto(diff) do |item|
+          next_space = board.board[current_space[0] + item][current_space[1] - item]
+          if !next_space.nil? && next_space != piece_to_capture
+            valid = false
+            break
+          else
+            valid = true if color != piece_to_capture.color
+          end
+        end   
+    end
+    valid
+  end
 end
 
 class Queen < Piece
@@ -266,7 +431,50 @@ class Queen < Piece
 end
 
 class King < Piece
+  def move?(current_space, end_space, color, board)
+    if end_space[0] == current_space[0] + 1 && end_space[1] == current_space[1] 
+      return true
+    elsif end_space[0] == current_space[0] - 1 && end_space[1] == current_space[1]
+      return true
+    elsif end_space[0] == current_space[0] && end_space[1] == current_space[1] + 1
+      return true
+    elsif end_space[0] == current_space[0] && end_space[1] == current_space[1] - 1
+      return true
+    elsif end_space[0] == current_space[0] + 1 && end_space[1] == current_space[1] + 1
+      return true
+    elsif end_space[0] == current_space[0] + 1 && end_space[1] == current_space[1] - 1
+      return true
+    elsif end_space[0] == current_space[0] - 1 && end_space[1] == current_space[1] + 1
+      return true
+    elsif end_space[0] == current_space[0] - 1 && end_space[1] == current_space[1] - 1
+      return true  
+    end
+  false 
+  end
 
+  def attackable_piece?(current_space, end_space, color, board)
+    piece_to_capture = board.board[end_space[0]][end_space[1]]
+    valid = false
+
+    if end_space[0] == current_space[0] + 1 && end_space[1] == current_space[1]
+      valid = true if piece_to_capture.color != color
+    elsif end_space[0] == current_space[0] - 1 && end_space[1] == current_space[1]
+      valid = true if piece_to_capture.color != color
+    elsif end_space[0] == current_space[0] && end_space[1] == current_space[1] + 1
+      valid = true if piece_to_capture.color != color
+    elsif end_space[0] == current_space[0] && end_space[1] == current_space[1] - 1
+      valid = true if piece_to_capture.color != color
+    elsif end_space[0] == current_space[0] + 1 && end_space[1] == current_space[1] + 1
+      valid = true if piece_to_capture.color != color
+    elsif end_space[0] == current_space[0] + 1 && end_space[1] == current_space[1] - 1
+      valid = true if piece_to_capture.color != color
+    elsif end_space[0] == current_space[0] - 1 && end_space[1] == current_space[1] + 1
+      valid = true if piece_to_capture.color != color
+    elsif end_space[0] == current_space[0] - 1 && end_space[1] == current_space[1] - 1
+      valid = true if piece_to_capture.color != color      
+    end
+    valid
+  end
 end
 
 class Game
