@@ -25,18 +25,18 @@ class Board
     @board[7][6] = Knight.new("White", "2658")
 
     #Populates board spaces [0][2], [0][5], [7][2], [7][5] with Bishops
-    @board[0][2] = Bishop.new("Black", "265D")
+    @board[2][2] = Bishop.new("Black", "265D")
     @board[0][5] = Bishop.new("Black", "265D")
-    @board[7][2] = Bishop.new("White", "2657")
+    @board[5][2] = Bishop.new("White", "2657")
     @board[7][5] = Bishop.new("White", "2657")
 
     #Populates board spaces [0][3], [7][3] with Queens
-    @board[0][3] = Queen.new("Black", "265B")
-    @board[7][3] = Queen.new("White", "2655")
+    @board[2][3] = Queen.new("Black", "265B")
+    @board[5][3] = Queen.new("White", "2655")
 
     #Populates board spaces [0][4], [7][4] with Kings
-    @board[5][4] = King.new("Black", "265A")
-    @board[5][5] = King.new("White", "2654")
+    @board[0][4] = King.new("Black", "265A")
+    @board[7][4] = King.new("White", "2654")
   end
 
   def display
@@ -100,7 +100,7 @@ class Pawn < Piece
     super
   end
 
-  def move?(current_space, end_space, color, board)
+  def self.move?(current_space, end_space, color, board)
     case color
     when "Black"
       if end_space[0] == current_space[0] + 1 && end_space[1] == current_space[1] && board.board[current_space[0]][current_space[1]].color == "Black"
@@ -114,20 +114,21 @@ class Pawn < Piece
   false 
   end
 
-  def attackable_piece?(current_space, end_space, color, board)
+  def self.attackable_piece?(current_space, end_space, color, board)
     piece = board.board[end_space[0]][end_space[1]]
+    piece_to_capture = board.board[end_space[0]][end_space[1]]
     case color
     when "Black"
-      if end_space[0] == current_space[0] + 1 && end_space[1] == current_space[1] + 1 && piece.color != "Black"
-        return true
-      elsif end_space[0] == current_space[0] + 1 && end_space[1] == current_space[1] - 1 && piece.color != "Black"
-        return true
+      if end_space[0] == current_space[0] + 1 && end_space[1] == current_space[1] + 1 && !piece_to_capture.nil?
+        return true if piece.color != color
+      elsif end_space[0] == current_space[0] + 1 && end_space[1] == current_space[1] - 1 && !piece_to_capture.nil?
+        return true if piece.color != color
       end
     when "White"
-      if end_space[0] == current_space[0] - 1 && end_space[1] == current_space[1] + 1 && piece.color != "White"
-        return true
-      elsif end_space[0] == current_space[0] - 1 && end_space[1] == current_space[1] - 1 && piece.color != "White"
-        return true  
+      if end_space[0] == current_space[0] - 1 && end_space[1] == current_space[1] + 1 && !piece_to_capture.nil?
+        return true if piece.color != color
+      elsif end_space[0] == current_space[0] - 1 && end_space[1] == current_space[1] - 1 && !piece_to_capture.nil?
+        return true if piece.color != color
       end
     end
   false
@@ -139,7 +140,7 @@ class Rooke < Piece
     super
   end
 
-  def move?(current_space, end_space, color, board)
+  def self.move?(current_space, end_space, color, board)
     piece = board.board[current_space[0]][current_space[1]]
     valid = false
 
@@ -191,7 +192,7 @@ class Rooke < Piece
   valid
   end
 
-  def attackable_piece?(current_space, end_space, color, board)
+  def self.attackable_piece?(current_space, end_space, color, board)
     piece = board.board[current_space[0]][current_space[1]]
     piece_to_capture = board.board[end_space[0]][end_space[1]]
     valid = false
@@ -251,7 +252,7 @@ class Knight < Piece
   def initialize(color, unicode)
     super
   end
-  def move?(current_space, end_space, color, board)
+  def self.move?(current_space, end_space, color, board)
     if end_space[0] == current_space[0] + 2 && end_space[1] == current_space[1] - 1 
       return true
     elsif end_space[0] == current_space[0] + 2 && end_space[1] == current_space[1] + 1
@@ -272,7 +273,7 @@ class Knight < Piece
   false 
   end
 
-  def attackable_piece?(current_space, end_space, color, board)
+  def self.attackable_piece?(current_space, end_space, color, board)
     piece = board.board[end_space[0]][end_space[1]]
     case color
     when "Black"
@@ -317,7 +318,7 @@ class Knight < Piece
 end
 
 class Bishop < Piece
-  def move?(current_space, end_space, color, board)
+  def self.move?(current_space, end_space, color, board)
     piece = board.board[current_space[0]][current_space[1]]
     valid = false
 
@@ -370,7 +371,7 @@ class Bishop < Piece
     valid
   end
 
-  def attackable_piece?(current_space, end_space, color, board)
+  def self.attackable_piece?(current_space, end_space, color, board)
     piece_to_capture = board.board[end_space[0]][end_space[1]]
     valid = false
 
@@ -427,11 +428,31 @@ class Bishop < Piece
 end
 
 class Queen < Piece
+  def self.move?(current_space, end_space, color, board)
+    valid = false
 
+    if Bishop.move?(current_space, end_space, color, board)
+      valid = true
+    elsif Rooke.move?(current_space, end_space, color, board)
+      valid = true
+    end
+    valid
+  end
+
+  def self.attackable_piece?(current_space, end_space, color, board)
+    valid = false
+
+    if Bishop.attackable_piece?(current_space, end_space, color, board)
+      valid = true
+    elsif Rooke.attackable_piece?(current_space, end_space, color, board)
+      valid = true
+    end
+    valid
+  end
 end
 
 class King < Piece
-  def move?(current_space, end_space, color, board)
+  def self.move?(current_space, end_space, color, board)
     if end_space[0] == current_space[0] + 1 && end_space[1] == current_space[1] 
       return true
     elsif end_space[0] == current_space[0] - 1 && end_space[1] == current_space[1]
@@ -452,7 +473,7 @@ class King < Piece
   false 
   end
 
-  def attackable_piece?(current_space, end_space, color, board)
+  def self.attackable_piece?(current_space, end_space, color, board)
     piece_to_capture = board.board[end_space[0]][end_space[1]]
     valid = false
 
@@ -534,7 +555,7 @@ class Game
       @game_piece = @board.board[@piece_to_move[0]][@piece_to_move[1]]
       p @game_piece
 
-      if @game_piece.move?(@piece_to_move, @space_to_move_to, @current_color, @board) || @game_piece.attackable_piece?(@piece_to_move, @space_to_move_to, @current_color, @board)
+      if @game_piece.class.move?(@piece_to_move, @space_to_move_to, @current_color, @board) || @game_piece.class.attackable_piece?(@piece_to_move, @space_to_move_to, @current_color, @board)
         #sets game_piece in the desired space on the board
         @board.board[@space_to_move_to[0]][@space_to_move_to[1]] = @game_piece
 
@@ -602,7 +623,7 @@ class Game
   def validate_space_to_move_to(input_1, input_2)
     if @board.board[input_1][input_2].nil?
       return true
-    elsif @board.board[@piece_to_move[0]][@piece_to_move[1]].attackable_piece?(@piece_to_move, @space_to_move_to, @current_color, @board)
+    elsif @board.board[@piece_to_move[0]][@piece_to_move[1]].class.attackable_piece?(@piece_to_move, @space_to_move_to, @current_color, @board)
       return true
     else
      error_message("occupied")
